@@ -50,15 +50,25 @@ class NailistController extends Controller
             ->get();
 
         // Monthly views (last 6 months)
+        // Use appropriate date formatting depending on DB driver (SQLite uses strftime, MySQL uses DATE_FORMAT)
+        $driver = null;
+        try {
+            $driver = DB::getPdo()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        } catch (\Exception $e) {
+            // ignore and fall back to MySQL-style
+            $driver = 'mysql';
+        }
+
+        $dateExpression = $driver === 'sqlite'
+            ? DB::raw('strftime("%Y-%m", viewed_at) as month')
+            : DB::raw("DATE_FORMAT(viewed_at, '%Y-%m') as month");
+
         $monthlyViews = CatalogView::whereIn('catalog_id', function($query) use ($nailist) {
                 $query->select('id')
                     ->from('nail_catalogs')
                     ->where('nailist_id', $nailist->id);
             })
-            ->select(
-                DB::raw('strftime("%Y-%m", viewed_at) as month'),
-                DB::raw('count(*) as count')
-            )
+            ->select($dateExpression, DB::raw('count(*) as count'))
             ->groupBy('month')
             ->orderBy('month', 'desc')
             ->take(6)

@@ -32,9 +32,21 @@ class AdminController extends Controller
             ->groupBy('classified_size_right')
             ->get();
 
-        // Monthly measurements
+        // Monthly measurements (DB driver aware: use strftime for sqlite, DATE_FORMAT for MySQL)
+        try {
+            $driver = DB::getPdo()->getAttribute(\PDO::ATTR_DRIVER_NAME) ?? config('database.default');
+        } catch (\Exception $e) {
+            $driver = config('database.default');
+        }
+
+        if ($driver === 'sqlite') {
+            $dateExpr = 'strftime("%Y-%m", created_at)';
+        } else {
+            $dateExpr = "DATE_FORMAT(created_at, '%Y-%m')";
+        }
+
         $monthlyMeasurements = Measurement::select(
-            DB::raw('strftime("%Y-%m", created_at) as month'),
+            DB::raw($dateExpr . ' as month'),
             DB::raw('count(*) as count')
         )
             ->groupBy('month')
@@ -78,8 +90,9 @@ class AdminController extends Controller
 
         // View Statistics
         $totalViews = CatalogView::count();
-        $viewsThisMonth = CatalogView::whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
+        // CatalogView uses `viewed_at` (timestamps disabled), use that column for date filters
+        $viewsThisMonth = CatalogView::whereMonth('viewed_at', now()->month)
+            ->whereYear('viewed_at', now()->year)
             ->count();
 
         // Recent Nailist Registrations

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Ubah role dari single menjadi JSON array untuk multi-role
-            $table->json('roles')->default('["user"]')->after('email_verified_at');
+            $table->json('roles')->nullable()->after('email_verified_at');
 
             // Nailist-specific fields
             $table->boolean('is_nailist_approved')->default(false)->after('roles');

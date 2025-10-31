@@ -22,7 +22,7 @@
                         <li><a href="{{ route('panduan') }}" class="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-300">Panduan</a></li>
                         <li><a href="{{ route('products.index') }}" class="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-300">Produk</a></li>
                         <li><a href="{{ route('measurements.index') }}" class="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-300">Riwayat</a></li>
-                        <li><a href="#testimoni" class="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-300">Testimoni</a></li>
+                        <li><a href="{{ route('home') }}#testimoni" class="text-gray-700 hover:text-pink-500 font-medium transition-colors duration-300">Testimoni</a></li>
                     </ul>
                 </nav>
 
@@ -173,7 +173,7 @@
                     <li><a href="{{ route('panduan') }}" class="block text-gray-700 hover:text-pink-500 font-medium py-2">Panduan</a></li>
                     <li><a href="{{ route('products.index') }}" class="block text-gray-700 hover:text-pink-500 font-medium py-2">Produk</a></li>
                     <li><a href="{{ route('measurements.index') }}" class="block text-gray-700 hover:text-pink-500 font-medium py-2">Riwayat</a></li>
-                    <li><a href="#testimoni" class="block text-gray-700 hover:text-pink-500 font-medium py-2">Testimoni</a></li>
+                    <li><a href="{{ route('home') }}#testimoni" class="block text-gray-700 hover:text-pink-500 font-medium py-2">Testimoni</a></li>
                 </ul>
             </nav>
 
