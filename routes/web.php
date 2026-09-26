@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HasilKlasifikasiController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InputDataController;
@@ -41,6 +42,10 @@ Route::patch('/cart/items/{cartItem}', [CartController::class, 'update'])->name(
 Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->name('cart.items.destroy');
 Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon');
 Route::post('/cart/notes', [CartController::class, 'saveNotes'])->name('cart.notes');
+
+// Checkout (WhatsApp order handoff)
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'submit'])->name('checkout.submit');
 
 // Measurement History routes
 Route::get('/riwayat', [MeasurementHistoryController::class, 'index'])->name('measurements.index');

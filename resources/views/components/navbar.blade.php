@@ -303,6 +303,7 @@
             <div class="flex justify-between text-gray-600"><dt>Discount</dt><dd data-cart-discount>− Rp 0</dd></div>
             <div class="flex justify-between border-t border-gray-200 pt-3 text-base font-semibold text-gray-900"><dt>Total</dt><dd data-cart-total>Rp 0</dd></div>
         </dl>
+        <a href="{{ route('checkout.index') }}" class="mt-4 block rounded-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 px-6 py-3 text-center text-sm font-bold text-white shadow-md transition">Checkout</a>
         <p class="mt-3 text-xs text-gray-500">Shipping and checkout will be arranged after your order is confirmed.</p>
     </div>
 </aside>
