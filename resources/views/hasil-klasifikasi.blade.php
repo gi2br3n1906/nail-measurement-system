@@ -71,8 +71,7 @@
                         @foreach($rightHandData as $finger => $size)
                         <div class="bg-gradient-to-br from-pink-50 to-white rounded-xl p-4 text-center border-2 border-pink-100">
                             <p class="text-sm text-gray-600 mb-2 capitalize">{{ ucfirst($finger) }}</p>
-                            <p class="text-2xl font-bold text-pink-600">{{ $size }}</p>
-                            <p class="text-xs text-gray-400">mm</p>
+                            <p class="text-2xl font-bold text-pink-600">Tip #{{ $rightTipNumbers[$finger] }}</p>
                         </div>
                         @endforeach
                     </div>
@@ -127,8 +126,7 @@
                         @foreach($leftHandData as $finger => $size)
                         <div class="bg-gradient-to-br from-rose-50 to-white rounded-xl p-4 text-center border-2 border-rose-100">
                             <p class="text-sm text-gray-600 mb-2 capitalize">{{ ucfirst($finger) }}</p>
-                            <p class="text-2xl font-bold text-rose-600">{{ $size }}</p>
-                            <p class="text-xs text-gray-400">mm</p>
+                            <p class="text-2xl font-bold text-rose-600">Tip #{{ $leftTipNumbers[$finger] }}</p>
                         </div>
                         @endforeach
                     </div>

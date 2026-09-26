@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\SizeStandard;
+use Illuminate\Database\Seeder;
 
 class SizeStandardSeeder extends Seeder
 {
@@ -17,8 +16,8 @@ class SizeStandardSeeder extends Seeder
             [
                 'size_name' => 'XS',
                 'jempol' => 14,
-                'telunjuk' => 11,
-                'tengah' => 12,
+                'telunjuk' => 9,
+                'tengah' => 11,
                 'manis' => 10,
                 'kelingking' => 8,
                 'tolerance' => 1.0,
@@ -27,8 +26,8 @@ class SizeStandardSeeder extends Seeder
             [
                 'size_name' => 'S',
                 'jempol' => 15,
-                'telunjuk' => 12,
-                'tengah' => 13,
+                'telunjuk' => 11,
+                'tengah' => 12,
                 'manis' => 11,
                 'kelingking' => 8,
                 'tolerance' => 1.0,
@@ -37,27 +36,33 @@ class SizeStandardSeeder extends Seeder
             [
                 'size_name' => 'M',
                 'jempol' => 16,
-                'telunjuk' => 12,
+                'telunjuk' => 11.5,
                 'tengah' => 13,
-                'manis' => 11,
-                'kelingking' => 9,
+                'manis' => 12,
+                'kelingking' => 9.5,
                 'tolerance' => 1.0,
                 'is_active' => true,
             ],
             [
-                'size_name' => 'XL',
-                'jempol' => 18,
-                'telunjuk' => 13,
+                'size_name' => 'L',
+                'jempol' => 17,
+                'telunjuk' => 12.5,
                 'tengah' => 14,
-                'manis' => 12,
+                'manis' => 13,
                 'kelingking' => 10,
                 'tolerance' => 1.0,
                 'is_active' => true,
             ],
         ];
 
+        SizeStandard::whereNotIn('size_name', ['XS', 'S', 'M', 'L'])
+            ->update(['is_active' => false]);
+
         foreach ($standards as $standard) {
-            SizeStandard::create($standard);
+            SizeStandard::updateOrCreate(
+                ['size_name' => $standard['size_name']],
+                $standard
+            );
         }
     }
 }

@@ -2,43 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Measurement;
+use App\Models\SizeStandard;
+use App\Services\NailSizeConverter;
+use Illuminate\Http\Request;
 
 class HasilKlasifikasiController extends Controller
 {
-    // Size chart reference data (from the provided image)
-    private $sizeChart = [
-        'XS' => [
-            'jempol' => 14,
-            'telunjuk' => 11,
-            'tengah' => 12,
-            'manis' => 10,
-            'kelingking' => 8,
-        ],
-        'S' => [
-            'jempol' => 15,
-            'telunjuk' => 12,
-            'tengah' => 13,
-            'manis' => 11,
-            'kelingking' => 8,
-        ],
-        'M' => [
-            'jempol' => 16,
-            'telunjuk' => 12,
-            'tengah' => 13,
-            'manis' => 11,
-            'kelingking' => 9,
-        ],
-        'XL' => [
-            'jempol' => 18,
-            'telunjuk' => 13,
-            'tengah' => 14,
-            'manis' => 12,
-            'kelingking' => 10,
-        ],
-    ];
-
     public function store(Request $request)
     {
         // Validate input
@@ -87,6 +57,12 @@ class HasilKlasifikasiController extends Controller
             $leftClassification = $this->classifySize($leftHandData);
         }
 
+        $converter = new NailSizeConverter;
+        $rightTipNumbers = array_map(fn ($mm) => $converter->toTipNumber($mm), $rightHandData);
+        $leftTipNumbers = $leftHandData
+            ? array_map(fn ($mm) => $converter->toTipNumber($mm), $leftHandData)
+            : null;
+
         // Save measurement to database
         $measurement = Measurement::create([
             'right_hand_data' => $rightHandData,
@@ -102,6 +78,8 @@ class HasilKlasifikasiController extends Controller
             'leftHandData' => $leftHandData,
             'rightClassification' => $rightClassification,
             'leftClassification' => $leftClassification,
+            'rightTipNumbers' => $rightTipNumbers,
+            'leftTipNumbers' => $leftTipNumbers,
             'hasLeftHand' => $hasLeftHand,
             'measurementId' => $measurement->id,
         ]);
@@ -116,8 +94,21 @@ class HasilKlasifikasiController extends Controller
         $bestMatch = null;
         $smallestDifference = PHP_FLOAT_MAX;
         $differences = [];
+        $sizeChart = SizeStandard::query()
+            ->where('is_active', true)
+            ->whereIn('size_name', ['XS', 'S', 'M', 'L'])
+            ->orderByRaw("CASE size_name WHEN 'XS' THEN 0 WHEN 'S' THEN 1 WHEN 'M' THEN 2 WHEN 'L' THEN 3 END")
+            ->get();
 
-        foreach ($this->sizeChart as $size => $standardMeasurements) {
+        foreach ($sizeChart as $standard) {
+            $size = $standard->size_name;
+            $standardMeasurements = [
+                'jempol' => (float) $standard->jempol,
+                'telunjuk' => (float) $standard->telunjuk,
+                'tengah' => (float) $standard->tengah,
+                'manis' => (float) $standard->manis,
+                'kelingking' => (float) $standard->kelingking,
+            ];
             $totalDifference = 0;
             $fingerDifferences = [];
 
@@ -179,4 +170,3 @@ class HasilKlasifikasiController extends Controller
         return view('hasil-klasifikasi');
     }
 }
-
