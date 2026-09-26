@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    private const CATEGORIES = ['Classy', 'Coquette', 'Y2K', 'Floral', 'Grunge', 'Tools'];
+
     /**
      * Display all products with filtering
      */
@@ -14,16 +16,16 @@ class ProductController extends Controller
     {
         $query = Product::active();
 
-        // Filter by size if provided
-        if ($request->has('size') && $request->size != 'all') {
-            $query->where('size', $request->size);
+        $category = $request->input('category');
+        if ($category !== 'All Styles' && in_array($category, self::CATEGORIES, true)) {
+            $query->where('category', $category);
         }
 
         // Search by name or description
         if ($request->has('search') && $request->search) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -50,7 +52,10 @@ class ProductController extends Controller
             return view('products.partials.product-list', compact('products'))->render();
         }
 
-        return view('products.index', compact('products'));
+        return view('products.index', [
+            'products' => $products,
+            'categories' => ['All Styles', ...self::CATEGORIES],
+        ]);
     }
 
     /**

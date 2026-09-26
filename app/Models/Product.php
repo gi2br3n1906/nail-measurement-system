@@ -13,6 +13,9 @@ class Product extends Model
         'name',
         'description',
         'size',
+        'available_sizes',
+        'available_lengths',
+        'category',
         'price',
         'image_url',
         'stock',
@@ -21,6 +24,8 @@ class Product extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'available_sizes' => 'array',
+        'available_lengths' => 'array',
         'stock' => 'integer',
         'is_active' => 'boolean',
     ];
@@ -49,11 +54,26 @@ class Product extends Model
         return $this->stock > 0;
     }
 
+    public function availableSizes(): array
+    {
+        return $this->available_sizes ?: [$this->size];
+    }
+
+    public function availableLengths(): array
+    {
+        return $this->available_lengths ?: ['Short', 'Medium', 'Long'];
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
     /**
      * Get formatted price
      */
     public function getFormattedPriceAttribute()
     {
-        return 'Rp ' . number_format($this->price, 0, ',', '.');
+        return 'Rp '.number_format($this->price, 0, ',', '.');
     }
 }

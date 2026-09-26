@@ -1,12 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\PanduanController;
-use App\Http\Controllers\InputDataController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\HasilKlasifikasiController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InputDataController;
 use App\Http\Controllers\MeasurementHistoryController;
+use App\Http\Controllers\PanduanController;
+use App\Http\Controllers\ProductController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/panduan', [PanduanController::class, 'index'])->name('panduan');
@@ -16,6 +18,7 @@ Route::post('/hasil-klasifikasi', [HasilKlasifikasiController::class, 'store'])-
 // Catalog routes (require authentication)
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ReviewController;
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/catalogs', [CatalogController::class, 'index'])->name('catalogs.index');
     Route::get('/catalogs/{id}', [CatalogController::class, 'show'])->name('catalogs.show');
@@ -31,6 +34,14 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/produk', [ProductController::class, 'index'])->name('products.index');
 Route::get('/produk/{id}', [ProductController::class, 'show'])->name('products.show');
 
+// Guest-accessible, session-backed cart
+Route::get('/cart/items', [CartController::class, 'index'])->name('cart.items.index');
+Route::post('/cart/items', [CartController::class, 'store'])->name('cart.items.store');
+Route::patch('/cart/items/{cartItem}', [CartController::class, 'update'])->name('cart.items.update');
+Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->name('cart.items.destroy');
+Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon');
+Route::post('/cart/notes', [CartController::class, 'saveNotes'])->name('cart.notes');
+
 // Measurement History routes
 Route::get('/riwayat', [MeasurementHistoryController::class, 'index'])->name('measurements.index');
 Route::get('/riwayat/{id}', [MeasurementHistoryController::class, 'show'])->name('measurements.show');
@@ -39,13 +50,13 @@ Route::delete('/riwayat/{id}', [MeasurementHistoryController::class, 'destroy'])
 
 // Admin routes
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\SizeStandardController;
 use App\Http\Controllers\Admin\AdminMeasurementController;
-use App\Http\Controllers\Admin\NailistController as AdminNailistController;
 use App\Http\Controllers\Admin\CatalogModerationController;
-use App\Http\Controllers\Auth\RoleSelectionController;
-use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Admin\NailistController as AdminNailistController;
+use App\Http\Controllers\Admin\SizeStandardController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\RoleSelectionController;
 
 // Customer Authentication
 Route::get('/register', [RegisterController::class, 'show'])->name('register');
@@ -92,9 +103,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('/catalogs/{id}', [CatalogModerationController::class, 'destroy'])->name('catalogs.destroy');
 });
 
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('products', AdminProductController::class)->except(['show']);
+});
+
 // Nailist routes
-use App\Http\Controllers\Nailist\NailistController;
 use App\Http\Controllers\Nailist\CatalogController as NailistCatalogController;
+use App\Http\Controllers\Nailist\NailistController;
 
 Route::middleware(['auth'])->prefix('nailist')->name('nailist.')->group(function () {
     Route::get('/dashboard', [NailistController::class, 'dashboard'])->name('dashboard');
@@ -109,4 +124,3 @@ Route::middleware(['auth'])->prefix('nailist')->name('nailist.')->group(function
     // Logout (shared with admin)
     Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
 });
-
