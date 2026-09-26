@@ -144,7 +144,13 @@
                 @endauth
             </div>
 
-            <!-- Mobile Menu Button -->
+            <button type="button" data-cart-open aria-controls="cartDrawer" aria-expanded="false" class="relative inline-flex items-center justify-center rounded-full border border-gray-300 bg-white/80 p-3 text-gray-700 shadow-sm transition hover:border-pink-300 hover:text-pink-600" aria-label="Open shopping cart">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 3h2l2.2 11.1a2 2 0 002 1.6h8.9a2 2 0 002-1.6L22 7H6"></path>
+                    <circle cx="10" cy="20" r="1"></circle><circle cx="18" cy="20" r="1"></circle>
+                </svg>
+                <span data-cart-count class="absolute -right-1 -top-1 min-w-5 rounded-full bg-gray-900 px-1.5 py-0.5 text-center text-[10px] font-semibold text-white">0</span>
+            </button>
             <button class="lg:hidden text-pink-500" onclick="toggleMobileMenu()">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -254,6 +260,52 @@
         </div>
     </div>
 </header>
+
+<div data-cart-overlay class="fixed inset-0 z-[70] hidden bg-gray-950/45 backdrop-blur-[2px]" aria-hidden="true"></div>
+<aside id="cartDrawer" data-cart-drawer class="fixed inset-y-0 right-0 z-[80] flex w-full max-w-md translate-x-full flex-col border-l border-gray-200 bg-white shadow-2xl transition-transform duration-300" aria-labelledby="cartDrawerTitle" aria-hidden="true">
+    <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+        <div>
+            <p class="text-xs font-medium uppercase tracking-[0.18em] text-gray-500">Your selection</p>
+            <h2 id="cartDrawerTitle" class="mt-1 text-xl font-semibold text-gray-900">Shopping bag <span data-cart-count-label class="text-sm font-normal text-gray-500">(0)</span></h2>
+        </div>
+        <button type="button" data-cart-close class="rounded-full border border-gray-200 p-2 text-gray-500 transition hover:border-gray-400 hover:text-gray-900" aria-label="Close shopping cart">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m6 6 12 12M18 6 6 18"></path></svg>
+        </button>
+    </div>
+    <div class="flex-1 overflow-y-auto px-5 py-4">
+        <p data-cart-feedback class="mb-3 hidden rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700" role="status" aria-live="polite"></p>
+        <div data-cart-items class="space-y-3"></div>
+        <div data-cart-empty class="hidden rounded-2xl border border-dashed border-gray-300 px-5 py-10 text-center">
+            <p class="font-medium text-gray-900">Your bag is empty</p>
+            <p class="mt-1 text-sm text-gray-500">Choose a set and it will appear here.</p>
+        </div>
+        <section class="mt-6 border-t border-gray-200 pt-5">
+            <h3 class="text-sm font-semibold text-gray-900">Discount Code</h3>
+            <form data-cart-coupon-form class="mt-3 flex gap-2" action="{{ route('cart.coupon') }}">
+                <label for="cartCouponCode" class="sr-only">Discount Code</label>
+                <input id="cartCouponCode" name="code" autocomplete="off" placeholder="Enter code" class="min-w-0 flex-1 rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none transition focus:border-gray-900 focus:ring-2 focus:ring-gray-200">
+                <button class="rounded-xl border border-gray-900 px-4 py-2.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-900 hover:text-white">Apply</button>
+            </form>
+            <p data-cart-coupon class="mt-2 hidden text-xs text-emerald-700"></p>
+        </section>
+        <section class="mt-5 border-t border-gray-200 pt-5">
+            <h3 class="text-sm font-semibold text-gray-900">Add Notes</h3>
+            <form data-cart-notes-form class="mt-3 space-y-2" action="{{ route('cart.notes') }}">
+                <label for="cartNotes" class="sr-only">Order notes</label>
+                <textarea id="cartNotes" name="notes" rows="3" maxlength="1000" placeholder="Anything we should know?" class="w-full resize-y rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none transition focus:border-gray-900 focus:ring-2 focus:ring-gray-200"></textarea>
+                <button class="rounded-xl border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-gray-900 hover:text-gray-900">Save notes</button>
+            </form>
+        </section>
+    </div>
+    <div class="border-t border-gray-200 bg-white px-5 py-4">
+        <dl class="space-y-2 text-sm">
+            <div class="flex justify-between text-gray-600"><dt>Subtotal</dt><dd data-cart-subtotal>Rp 0</dd></div>
+            <div class="flex justify-between text-gray-600"><dt>Discount</dt><dd data-cart-discount>− Rp 0</dd></div>
+            <div class="flex justify-between border-t border-gray-200 pt-3 text-base font-semibold text-gray-900"><dt>Total</dt><dd data-cart-total>Rp 0</dd></div>
+        </dl>
+        <p class="mt-3 text-xs text-gray-500">Shipping and checkout will be arranged after your order is confirmed.</p>
+    </div>
+</aside>
 
 <script>
 function toggleMobileMenu() {

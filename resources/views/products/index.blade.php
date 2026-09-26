@@ -46,16 +46,13 @@
 
             <!-- Filter & Sort -->
             <div class="flex flex-wrap gap-3 items-center">
-                <!-- Size Filter (Auto-submit on change) -->
-                <select name="size"
-                        id="sizeFilter"
+                <select name="category"
+                        id="categoryFilter"
                         class="px-4 py-3 rounded-full border-2 border-pink-200 focus:border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-100 bg-white cursor-pointer"
                         onchange="applyFilters()">
-                    <option value="all" {{ request('size') == 'all' ? 'selected' : '' }}>Semua Ukuran</option>
-                    <option value="XS" {{ request('size') == 'XS' ? 'selected' : '' }}>Size XS</option>
-                    <option value="S" {{ request('size') == 'S' ? 'selected' : '' }}>Size S</option>
-                    <option value="M" {{ request('size') == 'M' ? 'selected' : '' }}>Size M</option>
-                    <option value="XL" {{ request('size') == 'XL' ? 'selected' : '' }}>Size XL</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category }}" {{ request('category', 'All Styles') === $category ? 'selected' : '' }}>{{ $category }}</option>
+                    @endforeach
                 </select>
 
                 <!-- Sort (Auto-submit on change) -->
@@ -69,7 +66,7 @@
                     <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nama A-Z</option>
                 </select>
 
-                @if(request('search') || request('size') != 'all' || request('sort') != 'newest')
+                @if(request('search') || (request('category') && request('category') !== 'All Styles') || request('sort', 'newest') !== 'newest')
                 <a href="{{ route('products.index') }}" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full font-semibold transition-all duration-300">
                     Reset
                 </a>
@@ -153,7 +150,7 @@
         }, 500);
     });
 
-    // Apply filters (for size and sort dropdowns)
+    // Apply category and sort filters
     function applyFilters() {
         fetchProducts();
     }
